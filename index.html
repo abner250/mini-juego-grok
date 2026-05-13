@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Juego - Adivina el Número</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #1a1a2e;
+            color: #eee;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #16213e;
+            border-radius: 15px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 18px;
+        }
+        button {
+            background: #0f3460;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background: #e94560; }
+        #mensaje { font-size: 20px; margin: 15px; min-height: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Adivina el Número</h1>
+        <p>Estoy pensando en un número entre 1 y 100.</p>
+        <p>Tienes 10 intentos.</p>
+        
+        <input type="number" id="guess" placeholder="Tu adivinanza" min="1" max="100">
+        <button onclick="adivinar()">Adivinar</button>
+        
+        <div id="mensaje"></div>
+        <div id="intentos">Intentos restantes: 10</div>
+        <button onclick="reiniciar()">Nuevo Juego</button>
+    </div>
+
+    <script>
+        let numeroSecreto = Math.floor(Math.random() * 100) + 1;
+        let intentos = 10;
+        let intentosUsados = 0;
+
+        function adivinar() {
+            const guessInput = document.getElementById('guess');
+            const mensaje = document.getElementById('mensaje');
+            const intentosDiv = document.getElementById('intentos');
+            
+            const guess = parseInt(guessInput.value);
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                mensaje.textContent = '❌ Por favor ingresa un número entre 1 y 100';
+                mensaje.style.color = '#e94560';
+                return;
+            }
+            
+            intentosUsados++;
+            intentos--;
+            
+            if (guess === numeroSecreto) {
+                mensaje.innerHTML = `🎉 ¡Ganaste! El número era ${numeroSecreto}<br>Lo adivinaste en ${intentosUsados} intentos`;
+                mensaje.style.color = '#0f3460';
+                document.querySelector('button[onclick="adivinar()"]').disabled = true;
+            } else if (guess < numeroSecreto) {
+                mensaje.textContent = '🔼 El número es más alto';
+                mensaje.style.color = '#ffd700';
+            } else {
+                mensaje.textContent = '🔽 El número es más bajo';
+                mensaje.style.color = '#ffd700';
+            }
+            
+            intentosDiv.textContent = `Intentos restantes: ${intentos}`;
+            
+            if (intentos <= 0 && guess !== numeroSecreto) {
+                mensaje.textContent = `😔 Perdiste. El número era ${numeroSecreto}`;
+                mensaje.style.color = '#e94560';
+                document.querySelector('button[onclick="adivinar()"]').disabled = true;
+            }
+            
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        function reiniciar() {
+            numeroSecreto = Math.floor(Math.random() * 100) + 1;
+            intentos = 10;
+            intentosUsados = 0;
+            document.getElementById('mensaje').textContent = '';
+            document.getElementById('intentos').textContent = 'Intentos restantes: 10';
+            document.querySelector('button[onclick="adivinar()"]').disabled = false;
+            document.getElementById('guess').value = '';
+        }
+
+        // Enter key support
+        document.getElementById('guess').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') adivinar();
+        });
+    </script>
+</body>
+</html>
